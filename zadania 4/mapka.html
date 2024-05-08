@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map {height: 400px;}
+        .marker-popup { text-align: center;}
+        .copy-btn {background-color: #4CAF50; border: none; color: white; padding: 8px 16px; text-align: center; text-decoration: none; display: infine-block; font-size: 14px; margin: 4px 2px;cursor: pointer;} 
+        .copy-btn:hover { background-color: #45a049;}
+        </style>
+    </head>
+<body>
+    
+    <div id="map">/<div>
+        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+        <script>
+            var map = L.map('map').setView([51.505, -0.09], 13);
+
+            L.tileLayer('https:/{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copryright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            var marker1 = L.marker([52.421269, 16.935608]).addTo(map);
+            var marker2 = L.marker([52.401631, 16.973110]).addTo(map);
+            var marker3 = L.marker([52.421083, 16.906809]).addTo(map);
+
+            var polygon = L.polygon([
+                [52.413317, 16.922057],
+                [52.410296, 16.937623],
+                [52.399792, 16.935265],
+                [52.403318, 16.916632],
+            ]).addTo(map);
+
+            marker1.bindPopup('<div class="marker-popup">Park Cytadela<button class="copy-btn" onclick="kopiujWspolrzedne(51.5, -0.09)">Kopiuj Wspolrzedne</button></div>').openPopup();
+            marker2.bindPopup('<div class="marker-popup">Jeziero Maltanskie<button class="copy-btn" onclick="kopiujWspolrzedne(51.51, -0.1)">Kopiuj Wspolrzedne</button></div>').openPopup();
+            marker3.bindPopup('<div class="marker-popup">Park Solacki<button class="copy-btn" onclick="kopiujWspolrzedne(51.49, -0.08)">Kopiuj Wspolrzedne</button></div>').openPopup();
+
+            polygon.bindPopup("Centrum Poznania.");
+
+            polygon.on('mouseover', function(e) {
+                this.setStyle({color: 'blue'});
+            });
+
+            function skopiujWspolrzedne(szerokosc, dlugosc) {
+                var wspolrzedne = szerokosc + ", " + dlugosc;
+                navigator.clipboar.writeText(wspolrzedne).then(function() {
+                    alert("Wspolrzedne skopiowane do schowka: " + wspolrzedne);
+                }, function(err) {
+                    console.error('Nie mozna skopiowac tekstu.', err);
+                });
+            }
+            </script>
+</body>
+</html>

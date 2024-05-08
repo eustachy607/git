@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa z dodawaniem markerów</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map {height: 400px;}
+        .marker-popup { text-align: center;}
+        .copy-btn {background-color: #4CAF50; border: none; color: white; padding: 8px 16px; text-align: center; text-decoration: none; display: inline-block; font-size: 14px; margin: 4px 2px; cursor: pointer;} 
+        .copy-btn:hover { background-color: #45a049;}
+        .leaflet-control-container .leaflet-top.leaflet-right { top: 70px; }
+    </style>
+</head>
+<body>
+    
+    <div id="map"></div>
+    
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        var mapa = L.map('map').setView([51.505, -0.09], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(mapa);
+        
+        var dodajMarkerControl = L.Control.extend({
+            options: {
+                position: 'topright'
+            },
+
+            onAdd: function (map) {
+                var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+                container.style.backgroundColor = 'white';
+                container.style.backgroundImage = 'url("https://image.flaticon.com/icons/svg/2740/2740206.svg")';
+                container.style.backgroundSize = '30px 30px';
+                container.style.width = '30px';
+                container.style.height = '30px';
+                container.style.cursor = 'pointer';
+                container.title = 'Dodaj marker';
+                container.onclick = function(){
+                    pokazFormularzDodawaniaMarkerow();
+                };
+                return container;
+            }
+        });
+
+        mapa.addControl(new dodajMarkerControl());
+
+        function pokazFormularzDodawaniaMarkerow() {
+            var formularz = document.createElement('div');
+            formularz.innerHTML = `
+                <div style="position: absolute; top: 10px; left: 10px; background-color: rgba(255, 255, 255, 0.8); padding: 10px; border-radius: 5px;">
+                    <h3>Dodaj marker:</h3>
+                    <div>
+                        Szerokość geograficzna: <input type="text" id="szerInput"><br>
+                        Długość geograficzna: <input type="text" id="dluInput"><br>
+                        Tekst w okienku: <input type="text" id="popupTextInput"><br>
+                        Tekst na przycisku: <input type="text" id="buttonTextInput"><br>
+                        Kolor przycisku: <input type="color" id="buttonColorInput"><br>
+                        <button onclick="dodajMarker()">Dodaj Marker</button>
+                    </div>
+                </div>
+            `;
+            mapa.getContainer().appendChild(formularz);
+        }
+
+        function dodajMarker(){
+            var szerokosc = parseFloat(document.getElementById('szerInput').value);
+            var dlugosc = parseFloat(document.getElementById('dluInput').value);
+            var tekstOkno = document.getElementById('popupTextInput').value;
+            var tekstPrzycisk = document.getElementById('buttonTextInput').value;
+            var kolorPrzycisk = document.getElementById('buttonColorInput').value;
+
+            if (isNaN(szerokosc) || isNaN(dlugosc)) {
+                alert("Nieprawidłowa szerokość lub długość geograficzna. Proszę wprowadzić prawidłowe wartości.");
+                return;
+            }
+
+            var marker = L.marker([szerokosc, dlugosc]).addTo(mapa);
+            marker.bindPopup('<div class="marker-popup">' + tekstOkno + '<button style="background-color: ' + kolorPrzycisk + '" class="copy-btn">' + tekstPrzycisk + '</button></div>').openPopup();
+            marker.on('click', function(e) {
+                skopiujWspolrzedne(szerokosc, dlugosc);
+            });
+        }
+
+        function skopiujWspolrzedne(szerokosc, dlugosc) {
+            var wspolrzedne = szerokosc + ", " + dlugosc;
+            navigator.clipboard.writeText(wspolrzedne).then(function(){
+                alert("Współrzędne zostały skopiowane do schowka: " + wspolrzedne);
+            }, function(err) {
+                console.error("Nie można skopiować tekstu: ", err);
+            });
+        }
+    </script>
+</body>
+</html>
