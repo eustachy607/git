@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sprawdzanie Palindromu</title>
+</head>
+<header>
+    <h1>Sprawdzanie Palindromu</h1>
+</header>
+<body>
+  <input type="text" id="text-input">
+  <button id="check-btn">Sprawdź</button>
+  <div id="result"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const textInput = document.getElementById('text-input');
+      const checkBtn = document.getElementById('check-btn');
+      const resultDiv = document.getElementById('result');
+
+      checkBtn.addEventListener('click', function() {
+        const inputText = textInput.value.trim().toLowerCase().replace(/[^a-z0-9]/g, ''); 
+        if (inputText === '') {
+          alert('Proszę wprowadzić wartość');
+          return;
+        }
+
+        const isPalindrome = checkPalindrome(inputText);
+        if (isPalindrome) {
+          resultDiv.textContent = `${textInput.value} jest palindromem`;
+        } else {
+          resultDiv.textContent = `${textInput.value} nie jest palindromem`;
+        }
+      });
+
+      function checkPalindrome(str) {
+        const len = str.length;
+        for (let i = 0; i < len / 2; i++) {
+          if (str[i] !== str[len - 1 - i]) {
+            return false;
+          }
+        }
+        return true;
+      }
+    });
+  </script>
+</body>
+</html>
